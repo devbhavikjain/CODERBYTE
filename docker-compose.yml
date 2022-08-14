@@ -1,0 +1,41 @@
+version: '3.6'
+services:
+    # Base Image with executables and libraries
+    base_image:
+      image: base_image
+      container_name: base_image
+      build:
+        context: ./base_image
+        dockerfile: base.Dockerfile
+
+    # API Container
+    api:
+      image: api_image
+      container_name: api
+      build:
+        context: ./api
+        dockerfile: api.Dockerfile
+      ports:
+        - '5005:5000'
+      environment:
+        - CRYPTO_ENDPOINT_SCHEME=${CRYPTO_ENDPOINT_SCHEME}
+        - CRYPTO_ENDPOINT_HOST=${CRYPTO_ENDPOINT_HOST}
+        - CRYPT_ENDPOINT_PATH=${CRYPT_ENDPOINT_PATH}
+        - COINID=${COINID}
+      volumes:
+        - ./db/:/app/db/
+      depends_on:
+       - base_image
+
+    # Price Checker
+    poller:
+      image: poller_image
+      container_name: poller
+      build:
+        context: ./poller
+        dockerfile: poller.Dockerfile
+      env_file: .env
+      volumes:
+        - ./db/:/app/db/
+      depends_on:
+       - base_image

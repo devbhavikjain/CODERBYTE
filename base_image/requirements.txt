@@ -1,0 +1,5 @@
+Flask
+Flask-Cors
+secure-smtplib
+db-sqlite3
+requests
